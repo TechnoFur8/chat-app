@@ -1,0 +1,19 @@
+# node_modules
+# .git
+# .env
+Dockerfile
+.dockerignore
+# /.next/
+# /out/
+
+/node_modules
+
+/.next/
+/out/
+
+.env*
+
+.vercel
+
+node_modules
+.next/cache 

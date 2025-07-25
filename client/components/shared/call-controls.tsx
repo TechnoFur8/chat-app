@@ -11,8 +11,8 @@ interface Props {
     receiverName?: string
 }
 
-export const CallControls = ({ receiverId, receiverName }: Props) => {
-    const { callState, makeCall, answerCall, rejectCall, endCall, setBusy } = useSocketStore()
+export const CallControls = ({ receiverName }: Props) => {
+    const { callState, answerCall, rejectCall, endCall, setBusy } = useSocketStore()
 
     const localAudioRef = useRef<HTMLAudioElement>(null)
     const remoteAudioRef = useRef<HTMLAudioElement>(null)
@@ -31,12 +31,6 @@ export const CallControls = ({ receiverId, receiverName }: Props) => {
         }
     }, [callState.remoteStream])
 
-    // const handleMakeCall = async () => {
-    //     if (receiverId && receiverName) {
-    //         await makeCall(receiverId, receiverName)
-    //     }
-    // }
-
     const handleAnswerCall = async () => {
         await answerCall()
     }
@@ -54,11 +48,13 @@ export const CallControls = ({ receiverId, receiverName }: Props) => {
     }
 
     useEffect(() => {
+        const ringtone = ringtoneRef.current
+        
         if (callState.isOutgoingCall) {
             intervalRef.current = setInterval(() => {
-                if (ringtoneRef.current) {
-                    ringtoneRef.current.currentTime = 0
-                    ringtoneRef.current.play()
+                if (ringtone) {
+                    ringtone.currentTime = 0
+                    ringtone.play()
                 }
             }, 2000)
         } else {
@@ -66,9 +62,9 @@ export const CallControls = ({ receiverId, receiverName }: Props) => {
                 clearInterval(intervalRef.current)
                 intervalRef.current = null
             }
-            if (ringtoneRef.current) {
-                ringtoneRef.current.pause()
-                ringtoneRef.current.currentTime = 0
+            if (ringtone) {
+                ringtone.pause()
+                ringtone.currentTime = 0
             }
         }
 
@@ -77,9 +73,9 @@ export const CallControls = ({ receiverId, receiverName }: Props) => {
                 clearInterval(intervalRef.current)
                 intervalRef.current = null
             }
-            if (ringtoneRef.current) {
-                ringtoneRef.current.pause()
-                ringtoneRef.current.currentTime = 0
+            if (ringtone) {
+                ringtone.pause()
+                ringtone.currentTime = 0
             }
         }
     }, [callState.isOutgoingCall])
@@ -143,18 +139,6 @@ export const CallControls = ({ receiverId, receiverName }: Props) => {
                     </div>
                 </div>
             )}
-
-            {/* {!callState.isIncomingCall && !callState.isOutgoingCall && !callState.isInCall && receiverId && (
-                <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-8 w-8 p-0 text-neutral-400 hover:text-white hover:bg-neutral-700"
-                    onClick={handleMakeCall}
-                    title="Позвонить"
-                >
-                    <Phone className="h-4 w-4" />
-                </Button>
-            )} */}
         </div>
     )
 }

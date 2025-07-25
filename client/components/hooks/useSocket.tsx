@@ -9,6 +9,9 @@ export const useSocket = () => {
 
     useEffect(() => {
         const token = getCookie("jwt")
-        if (token)
-    })
+        if (token) {
+            // Здесь должна быть логика подключения к сокету
+            console.log("Token found:", token)
+        }
+    }, [dispatch])
 }

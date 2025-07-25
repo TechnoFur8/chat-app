@@ -9,8 +9,9 @@ export const generateToken = (userId, res) => {
     res.cookie("jwt", token, {
         maxAge: 24 * 60 * 60 * 1000,
         httpOnly: true,
-        sameSite: "strict",
-        secure: process.env.NODE_ENV !== "development"
+        sameSite: "none",
+        secure: true,
+        domain: "chat-app-server-production-f321.up.railway.app"
     })
 
     return token

@@ -3,7 +3,7 @@
 import { formMessageTime } from "@/lib/form-data"
 import { useCheckAuthQuery, useGetOneUserQuery } from "@/store/apiSlice"
 import { useSocketStore } from "@/store/socketSlice"
-import { useEffect, useState, useCallback } from "react"
+import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
 import { cn } from "@/lib/utils"
@@ -19,41 +19,27 @@ interface MessageType {
     img: string
 }
 
-interface NewMessageProps {
-    selectedChat: number
-}
-
-export const NewMessage = ({ selectedChat }: NewMessageProps) => {
+export const NewMessage = () => {
     const [userSend, setUserSend] = useState(0)
     const [lastMessage, setLastMessage] = useState<MessageType | null>(null)
     const { subscribe, unsubscribe } = useSocketStore()
     const { data } = useCheckAuthQuery()
     const { data: user } = useGetOneUserQuery(userSend)
 
-    const handleMessage = useCallback((msg: MessageType) => {
-        if (
-            msg.userIdChat === selectedChat ||
-            msg.senderId === selectedChat ||
-            msg.receiverId === selectedChat
-        ) return;
-        if (msg.senderId !== data?.id) {
-            setUserSend(msg.senderId)
-            setLastMessage(msg)
-        }
-    }, [selectedChat, data?.id]);
-
     useEffect(() => {
+        const handleMessage = (msg: MessageType) => {
+            if (msg.senderId !== data?.id) {
+                setUserSend(msg.senderId)
+                setLastMessage(msg)
+            }
+        }
         subscribe("message", handleMessage)
         return () => unsubscribe("message", handleMessage)
-    }, [subscribe, unsubscribe, handleMessage]);
+    }, [subscribe, unsubscribe, data?.id])
 
     useEffect(() => {
-        if (
-            user &&
-            lastMessage &&
-            userSend === lastMessage.senderId &&
-            lastMessage.userIdChat !== selectedChat
-        ) {
+
+        if (user && lastMessage && userSend === lastMessage.senderId) {
             toast.custom((t) => (
                 <div
                     className={cn(
@@ -103,12 +89,7 @@ export const NewMessage = ({ selectedChat }: NewMessageProps) => {
             ))
         }
 
-    }, [lastMessage, user, userSend, selectedChat])
-
-    useEffect(() => {
-        setLastMessage(null)
-        setUserSend(0)
-    }, [selectedChat])
+    }, [lastMessage, user, userSend])
 
     return null
 }

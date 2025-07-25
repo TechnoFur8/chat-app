@@ -87,7 +87,7 @@ export const ProfilForm = ({ img, name, email, isSetEdit, refetch }: Props) => {
                         <FormField
                             control={form.control}
                             name="img"
-                            render={({ field }) => (
+                            render={() => (
                                 <FormItem>
                                     <div className="relative">
                                         <Avatar className="size-32 ring-4 ring-neutral-700">
